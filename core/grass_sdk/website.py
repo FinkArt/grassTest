@@ -46,33 +46,33 @@ class GrassRest(BaseClient):
 
         return await handler(self.create_account)()
 
-    async def create_account(self):
-        url = 'https://api.getgrass.io/register'
-
-        params = {
-            'app': 'dashboard',
-        }
-
-        response = await self.session.post(url, headers=self.website_headers, json=await self.get_json_params(params,
-                                                                                                              REF_CODE),
-                                           proxy=self.proxy)
-        if response.status != 200 or "error" in await response.text():
-            if "Email Already Registered" in await response.text() or \
-                "Your registration could not be completed at this time." in await response.text():
-                logger.info(f"{self.email} | Email already registered!")
-                return
-            elif "Gateway" in await response.text():
-                raise RegistrationException(f"{self.id} | Create acc response: | html 504 gateway error")
-            error_msg = (await response.json())['error']['message']
-
-            raise RegistrationException(f"Create acc response: | {error_msg}")
-
-        logger.info(f"{self.email} | Account created!")
-
-        with open("logs/new_accounts.txt", "a", encoding="utf-8") as f:
-            f.write(f"{self.email}:{self.password}:{self.username}\n")
-
-        return await response.json()
+#     async def create_account(self):
+#         url = 'https://api.getgrass.io/register'
+#
+#         params = {
+#             'app': 'dashboard',
+#         }
+#
+#         response = await self.session.post(url, headers=self.website_headers, json=await self.get_json_params(params,
+#                                                                                                               REF_CODE),
+#                                            proxy=self.proxy)
+#         if response.status != 200 or "error" in await response.text():
+#             if "Email Already Registered" in await response.text() or \
+#                 "Your registration could not be completed at this time." in await response.text():
+#                 logger.info(f"{self.email} | Email already registered!")
+#                 return
+#             elif "Gateway" in await response.text():
+#                 raise RegistrationException(f"{self.id} | Create acc response: | html 504 gateway error")
+#             error_msg = (await response.json())['error']['message']
+#
+#             raise RegistrationException(f"Create acc response: | {error_msg}")
+#
+#         logger.info(f"{self.email} | Account created!")
+#
+#         with open("logs/new_accounts.txt", "a", encoding="utf-8") as f:
+#             f.write(f"{self.email}:{self.password}:{self.username}\n")
+#
+#         return await response.json()
 
     async def enter_account(self):
         res_json = await self.handle_login()
